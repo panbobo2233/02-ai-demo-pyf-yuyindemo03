@@ -63,6 +63,7 @@ export default function App() {
   const streamRef = useRef<MediaStream | null>(null);
   const transcriptRef = useRef<string>('');
   const interimRef = useRef<string>('');
+  const lastSnRef = useRef<number>(-1);
 
   // Auto-dismiss toast
   useEffect(() => {
@@ -365,6 +366,7 @@ export default function App() {
     setFinalTranscript('');
     transcriptRef.current = '';
     interimRef.current = '';
+    lastSnRef.current = -1;
     setStatusMsg('正在连接语音服务...');
 
     try {
@@ -398,16 +400,19 @@ export default function App() {
           const text = result.data.result.ws?.map((wsi: any) =>
             wsi.cw?.map((cw: any) => cw.w).join('')
           ).join('') || '';
+          const sn = result.data.result.sn ?? 0;
 
-          if (result.data.result.ls) {
-            transcriptRef.current += text;
-            interimRef.current = '';
-            setFinalTranscript(transcriptRef.current);
-            setInterimTranscript('');
-          } else {
-            interimRef.current = text;
-            setInterimTranscript(text);
+          if (sn !== lastSnRef.current) {
+            // 新句子开始了：把上一句的文本存入永久区
+            if (lastSnRef.current >= 0) {
+              transcriptRef.current += interimRef.current;
+            }
+            lastSnRef.current = sn;
           }
+          // 同一句话的渐进式修正：实时更新显示
+          interimRef.current = text;
+          setFinalTranscript(transcriptRef.current);
+          setInterimTranscript(text);
         }
       };
 
@@ -465,7 +470,7 @@ export default function App() {
     audioContextRef.current?.close();
 
     // 立刻抓取当前已识别的文本，防止后续异步操作丢失
-    const captured = transcriptRef.current || interimRef.current;
+    const captured = transcriptRef.current + interimRef.current;
     console.log('[finishRecording] captured text:', captured);
     console.log('[finishRecording] transcriptRef:', transcriptRef.current, 'interimRef:', interimRef.current);
 
