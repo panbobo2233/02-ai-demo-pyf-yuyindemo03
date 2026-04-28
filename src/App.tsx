@@ -27,18 +27,18 @@ interface FormData {
 }
 
 // --- Constants ---
-const POSITIONS = ['高级工程师', '经理', '总监'];
+const POSITIONS = ['部门总经理', '部门总经理助理', '部门副总经理', '部室经理及以下人员'];
 const REASONS = ['年休假', '福利假', '病假', '事假', '调休', '婚假', '产假'];
 
 export default function App() {
   // --- State ---
   const [formData, setFormData] = useState<FormData>({
     applicant: '潘逸梵',
-    fillTime: new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-').slice(0, 16),
+    fillTime: (() => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')} ${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}`; })(),
     workUnit: '总行_软件开发中心',
     location: '',
-    position: '',
-    phone: '',
+    position: '部室经理及以下人员',
+    phone: '13000000000',
     startDate: '',
     endDate: '',
     leaveDays: 0,
