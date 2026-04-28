@@ -1,0 +1,5 @@
+{
+  "name": "国内休假申请语音填单 Demo",
+  "description": "支持语音录入、AI 智能解析并自动填充的国内休假申请表单 Demo",
+  "requestFramePermissions": ["microphone"]
+}
