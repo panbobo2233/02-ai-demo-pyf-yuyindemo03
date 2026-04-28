@@ -216,7 +216,7 @@ export default function App() {
           'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY || ''}`,
         },
         body: JSON.stringify({
-          model: 'deepseek-v4-pro',
+          model: 'deepseek-v4-flash',
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: text },
